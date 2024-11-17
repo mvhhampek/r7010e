@@ -17,28 +17,26 @@ zlabel('z')
 
 
 base_radius = 7;
-
 theta = pi/2;
 d_theta = pi/6;
-
 d_z = 1/3;
 z = 1;
-
 base_via = [];
-
 while z < 38
     base_via = [base_via; base_radius*cos(theta) base_radius*sin(theta) z];
     z = z + d_z;
     theta = theta + d_theta;
     base_radius = base_radius - 0.025;
 end
-%base_traj = mstraj(base_via, [1, 1, 1], [], base_via(1,:), 0.2, 1);
+
 
 blade_radius = 5;
 y_offset = -5;
 z = 45;
 blade_via = [];
 theta = pi;
+
+% using y_offset and z from 45 to 70 instead of translating it after
 while z < 70
     blade_via = [blade_via; blade_radius*cos(theta) blade_radius*sin(theta)+y_offset z];
     z = z + d_z;
@@ -58,7 +56,7 @@ blade_via3 = blade_via3 + [0 0 40];
 hold on
 vias = [base_via;blade_via;blade_via2;blade_via3];
 traj = mstraj(vias, [1, 1, 1], [], vias(1,:), 0.2, 1);
-plot3(traj(:,1), traj(:,2), traj(:,3), '-')
+plot3(traj(:,1), traj(:,2), traj(:,3), 'black-', 'Linewidth', 2)
 
 
 

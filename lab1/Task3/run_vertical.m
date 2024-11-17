@@ -22,33 +22,32 @@ traj=q;
 traj;
 
 h = [
-0 1    0
+0     0 1
 0 0    0
-0 0.5  0
+0  0  0.5
 0 0.5  0.5
-0 1    0.5 
-0 0    0.5 
-].*0.3 * rotx(-pi/2);
+0     0.5  1
+0     0.5  0
+].*0.3;
 
 t = [ % transition between last point in h and first in k, x =/= 0 in order to not draw this
-0 0 0.5
--0.1 0.5 0.75
-0 1 1
-].*0.3 * rotx(-pi/2);
+0 0.5 0
+-0.1 -0.5 0.75
+0 -0.5 1
+].*0.3;
 
 k = [
-0 1   1
-0 0   1
-0 0.5 1
-0 1   1.5
-0 0.5 1
-0 0   1.5
-] * 0.3*rotx(-pi/2);
+0 -0.5   1
+0 -0.5 0
+0  -0.5 0.5
+0 -1   1
+0  -0.5 0.5
+ 0 -1 0   
+] * 0.3;
 
-h_traj = mstraj(h, [0.1, 0.1, 0.1], [], h(1,:), 0.2, 0);
-t_traj = mstraj(t, [0.1, 0.1, 0.1], [], t(1,:), 0.2, 0);
-k_traj = mstraj(k, [0.1, 0.1, 0.1], [], k(1,:), 0.2, 0);
+vias = [h;t;k];
+traj = mstraj(vias, [0.1, 0.1, 0.1], [], vias(1,:), 0.2, 0);
 %% send to robot
-Tp =SE3(0.6, 0, 0) *   SE3([h_traj; t_traj; k_traj]) * SE3.oa( [0 1 0], [1 0 0.1]);
-q = p560.ikine6s(Tp);
+Tp = SE3(0.6, 0, 0) *   SE3(traj) * SE3.oa( [0 1 0], [1 0 0.1]);
+q  = p560.ikine6s(Tp);
 plot_qtraj(q, wall, p560)

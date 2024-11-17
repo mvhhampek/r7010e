@@ -1,66 +1,53 @@
-%% 
-clear all
-clf
 close all
-%% 
-A_pose = {0, 0, 0, 0, 0, 0};
-B_pose = {0, 0, 1, 0, pi/2, 0};
-C_pose = {1, 0, 1, 0, -pi, 0};
-D_pose = {1, 0, -0.5, 0, pi/2, 0};
+clear
+clc
 
-A = pose2mtx(A_pose{:});
-B = pose2mtx(B_pose{:});
-C = pose2mtx(C_pose{:});
-D = pose2mtx(D_pose{:});
 
-%trplot(D, 'frame', 'D', 'arrow', 'rgb'); 
-mtxs = {A,B,C,D};
-names = {'A','B','C','D'};
 
-%%
-vias = [
-    A_pose{1:3}
-    B_pose{1:3}
-    C_pose{1:3}
-    D_pose{1:3}
+via = [
+  0, 0, 0, 0, 0, 0  
+  0, 0, 1, 0, pi/2, 0
+  1, 0, 1, 0, -pi, 0
+  1, 0, -0.5, 0, pi/2, 0
 ];
-QDMAX = [1,1,1];
-time_step = 0.05;
-t_acc = 1;
-q = mstraj(vias, QDMAX, [], vias(1,:), time_step, t_acc);
-plot3(q(:,1), q(:,2), q(:,3), '-')
-grid on
-title('trajectory')
-xlabel('x')
-ylabel('y')
-zlabel('z')
+
+traj = mstraj(via, [1,1,1,-1,-1,-1], [], via(1,:), 0.1, 2);
+
+num_poses = size(traj, 1);
+% make list of empty se3 object
+poses = repmat(SE3(), 1, num_poses); 
+
+
+for i = 1:num_poses
+    position = traj(i, 1:3);
+    rpy = traj(i, 4:6);
+    % add posiotion and orientation to pose objects
+    poses(i) = SE3(position) * SE3.rpy(rpy(1), rpy(2), rpy(3));
+end
+%%
+figure
 hold on
-%%
+grid on
+axis equal
+xlabel('X'); ylabel('Y'); zlabel('Z');
+view(3);
+xlim([-0.5, 1.5]);
+ylim([-0.5, .5]);
+zlim([-1, 1.5]);
+plot3(traj(:, 1), traj(:, 2), traj(:, 3), 'black-', 'LineWidth', 0.5);
 
-A = SE3([A_pose{1:3}]) * SE3.rpy(A_pose{4:6});              
-B = SE3([B_pose{1:3}]) * SE3.rpy(B_pose{4:6});  
-C = SE3([C_pose{1:3}]) * SE3.rpy(C_pose{4:6});  
-D = SE3([D_pose{1:3}]) * SE3.rpy(D_pose{4:6});  
+axis_length = 0.5; 
+frame = [];
 
-AB = ctraj(A, B, 50); 
-BC = ctraj(B, C, 50); 
-CD = ctraj(C, D, 50); 
-T = [AB;BC;CD];
-trplot(A, 'color', 'b'); 
-pause(3);
-hold off
-T.animate
-%AB.animate
-%BC.animate
-%CD.animate
+% draw each pose in the trajectory
+for i = 1:num_poses
+    % removes the previous frame
+    if ~isempty(frame)
+        delete(frame);
+    end
+    
+    frame = trplot(poses(i), 'length', axis_length, 'arrow', 'rgb');% 'rvis');
 
+    pause(0.05)
+end
 
-
-%%
-% returns homogenous transformation matrix of the pose 
-function mtx = pose2mtx(x,y,z,r,p,y2)
-    % ZYX seq
-    R = rotz(y2, 'rad') * roty(p, 'rad') * rotx(r, 'rad'); 
-    % make homogenous transformation matrix
-    mtx = [R, [x,y,z]'; 0,0,0,1];
-end 
