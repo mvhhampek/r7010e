@@ -18,27 +18,27 @@ wall.plotwall();           % to plot the wall
 % 1) An example trajectory can be loaded from the 'q.mat' file
 
 h = [
-0     0 1
-0 0    0
-0  0  0.5
-0 0.5  0.5
-0     0.5  1
-0     0.5  0
+0  0    1
+0  0    0
+0  0    0.5
+0  0.5  0.5
+0  0.5  1
+0  0.5  0
 ].*0.3;
 
 t = [ % transition between last point in h and first in k, x =/= 0 in order to not draw this
-0 0.5 0
+ 0    0.5 0
 -0.1 -0.5 0.75
-0 -0.5 1
+ 0   -0.5 1
 ].*0.3;
 
 k = [
-0 -0.5   1
+0 -0.5 1
 0 -0.5 0
 0 -0.5 0.5
 0 -1   1
 0 -0.5 0.5
-0 -1 0   
+0 -1   0   
 ] * 0.3;
 
 

@@ -29,8 +29,10 @@ path=[
 
 % time it takes to get to each point
 t_seg = [0.1,2.9,3,3,3,3,5,2,3,3];
+
 %% Genrate trajectory
-traj = mstraj(path, [], t_seg, path(1,:), 0.2, 1);
+DT=0.2;
+traj = mstraj(path, [], t_seg, path(1,:), DT, 1);
 
 
 %% Plot the path
