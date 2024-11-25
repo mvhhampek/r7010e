@@ -45,8 +45,11 @@ k = [
 0 -1   0   
 ] * 0.3;
 
-vias = [h;t;k];
-traj = mstraj(vias, [0.1, 0.1, 0.1], [], vias(1,:), 0.2, 0);
+h_traj = mstraj(h, [0.2, 0.2, 0.2], [], h(1,:), 0.2, 0);
+t_traj = mstraj(t, [0.1, 0.1, 0.1], [], t(1,:), 0.2, 0);
+k_traj = mstraj(k, [0.1, 0.1, 0.1], [], k(1,:), 0.2, 0);
+
+traj = [h_traj;t_traj;k_traj];
 %% send to robot
 Tp = SE3(0.6, 0, 0) *   SE3(traj) * SE3.oa( [0 1 0], [1 0 0.1]);
 q  = p560.ikine6s(Tp);

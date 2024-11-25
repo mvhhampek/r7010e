@@ -41,13 +41,12 @@ k = [
 0 -1   0   
 ] * 0.3;
 
+h_traj = mstraj(h, [0.2, 0.2, 0.2], [], h(1,:), 0.2, 0);
+t_traj = mstraj(t, [0.1, 0.1, 0.1], [], t(1,:), 0.2, 0);
+k_traj = mstraj(k, [0.1, 0.1, 0.1], [], k(1,:), 0.2, 0);
 
-vias = [h;t;k];
-vias = vias*roty(10,'deg');
-traj = mstraj(vias, [0.1, 0.1, 0.1], [], vias(1,:), 0.2, 0);
-
-%load q_inclined.mat
-%traj=q;
+traj = [h_traj;t_traj;k_traj];
+traj = traj*roty(10,'deg');
 
 %% send to robot
 Tp =SE3(0.6, 0, 0) *   SE3(traj) * SE3.oa( [0 1 0], [1 0 0.1]);

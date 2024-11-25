@@ -7,7 +7,7 @@ via = [
   0, 0, 1, 0, pi/2, 0 % B
   1, 0, 1, 0, -pi, 0 % C
   1, 0, -0.5, 0, pi/2, 0 % D
-]
+];
 
 % to draw the 4 poses
 poses2 = repmat(SE3(), 1, 4); 
@@ -65,9 +65,9 @@ axis_length = 0.5;
 frame = [];
 
 % A,B,C,D poses...
-for i = 1:4
-    trplot(poses2(i), 'length', axis_length/2, 'arrow', 'rgb');
-end
+%for i = 1:4
+%    trplot(poses2(i), 'length', axis_length/2, 'arrow', 'rgb');
+%end
 
 % draw each pose in the trajectory
 for i = 1:num_poses
