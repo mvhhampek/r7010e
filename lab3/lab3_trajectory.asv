@@ -1,0 +1,26 @@
+theta = linspace(0, 2*pi, 50);
+
+x = sin(theta);
+y = cos(theta);
+z = 1;
+yaw = atan2(-y, -x);
+figure
+hold on
+grid on
+axis equal
+xlabel('X'); ylabel('Y'); zlabel('Z');
+xlim([-0.5, 1.5]);
+ylim([-0.5, .5]);
+zlim([0, 1.5]);
+for i = 1:length(theta)
+
+    pose = SE3(x(i),y(i),z(i)) * SE3.rpy(0, 0, yaw(i));
+
+    if ~isempty(frame)
+        delete(frame);
+    end
+    
+    frame = trplot(pose, 'length', 0.5);
+
+
+end
