@@ -44,7 +44,10 @@ x = 2*x.*1/(2*pi);
 sinussy = [0 0; (x+0.2)' y'];
 %%
 
-%traj = square(2:end-1, :, :);
+traj = square(2:end-1, :, :);
+x = traj(:,1);
+y = traj(:,2);
+%%
 traj = L;
 x = traj(:,1);
 y = traj(:,2);
