@@ -20,7 +20,7 @@ x = sin(theta);
 y = cos(theta);
 z = ones(1, length(x));
 
-yaw = atan2(-y, -x);
+yaw = atan2(-y, -x) + pi/2;
 
 %% TILTED CIRCLE
 pos = [x' y' z']*rotx(45, 'deg');

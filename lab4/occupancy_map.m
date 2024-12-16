@@ -15,6 +15,7 @@ function flag = occupancy_map(x, y, theta, flag, ranges)
     valid = (0.2 <= ranges) & (ranges <= 3.4);
     ranges = ranges(valid);
     angles = angles(valid);
+    
     x_lidar = ranges.*cos(angles');
     y_lidar = ranges.*sin(angles');
 

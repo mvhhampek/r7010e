@@ -1,8 +1,11 @@
 %%
+load('jagkommerdö.mat')
+%%
 ranges_vals = ranges_exp.Data;
 x_vals = x_exp.Data;
 y_vals = y_exp.Data;
 theta_vals = theta_exp.Data;
+ang_vel_vals = ang_vel_exp.Data;
 n = length(x_vals);
 angles = linspace(0, 2*pi, 360);
 %%
@@ -11,22 +14,29 @@ for i = 1:n
     x = x_vals(i);
     y = y_vals(i);
     theta = theta_vals(i);
-    occupancy_map(x, y, theta, i-1, ranges');
-
+    ang_vel = ang_vel_vals(i);
+    occupancy_map(x, y, theta, ang_vel, i-1, ranges');
 end
+disp('donezo')
 
 
 %%
 % turn slower or map only when not turning
-function flag = occupancy_map(x, y, theta, flag, ranges)
+function flag = occupancy_map(x, y, theta, ang_vel, flag, ranges)
     global map
     
     if flag == 0 
        map_size = [15, 15]; 
-       map_res = 10;
+       map_res = 20;
        map = occupancyMap(map_size(1), map_size(2), map_res);
     end
     flag = 1;
+
+
+    if abs(ang_vel) > 0.3
+        return;
+    end
+
     angles = linspace(0, 2*pi, 360);
 
     % offset so start is at the center of the map
@@ -34,25 +44,23 @@ function flag = occupancy_map(x, y, theta, flag, ranges)
     x = x + offset;
     y = y + offset;
     
-    region_size = 10;
-    for i = 1:36
-        start_idx = (i-1)*region_size + 1;
-        end_idx = min(i*region_size, 360);
-        
-        region = ranges(start_idx : end_idx);
-        region_median = median(region);
-        dev = abs(region - region_median) / region_median;
+    idxs = 1:360;
+    range = -2:2;
+    wrapped_idxs =  mod((idxs(:) + range - 1), 360) + 1;
 
-        % deviation threshold = 0.2
-        outliers = dev > 0.2;
-        region(outliers) = 100;
-        ranges(start_idx : end_idx) = region;
-    end
+    x_ = ranges .* cos(angles');
+    y_ = ranges .* sin(angles');
+    
+    x_diff = x_ - x_(wrapped_idxs);
+    y_diff = y_ - y_(wrapped_idxs); 
+
+    dists = sqrt(x_diff.^2 + y_diff.^2);
+    ranges(mean(dists, 2) > 1) = 100;
 
 
     
     % min max filtering
-    valid = (0.2 <= ranges) & (ranges <= 2);
+    valid = (0.2 <= ranges) & (ranges <= 3);
     ranges = ranges(valid);
     angles = angles(valid);
 
@@ -65,7 +73,9 @@ function flag = occupancy_map(x, y, theta, flag, ranges)
     lidar_world = R*lidar_world;
     lidar_world = lidar_world + [x + offset; y + offset];
     
+
     
+
     for i = 1:size(lidar_world, 2)
        
        x_vals = lidar_world(:, 1);
@@ -77,7 +87,7 @@ function flag = occupancy_map(x, y, theta, flag, ranges)
     insertRay(map, [x, y, theta], ranges, angles, 3.5);
     show(map);
     hold on
-    scatter(x, y, 'rx')
+    scatter(x, y, 100, 'rx')
 
    
 end
