@@ -1,5 +1,5 @@
 %%
-%load('linus_karlsson_vanortsvägen38.mat')
+load('linus_karlsson_vanortsvägen38.mat')
 %%
 ranges_vals = ranges_exp.Data;
 x_vals = x_exp.Data;
@@ -9,9 +9,9 @@ ang_vel_vals = ang_vel_exp.Data;
 n = length(x_vals);
 angles = linspace(0, 2*pi, 360);
 %%
-map_size = [15, 15]; 
+map_size = 15; 
 map_res = 20;
-map = binaryOccupancyMap(map_size(1), map_size(2), map_res);
+map = binaryOccupancyMap(map_size, map_size, map_res);
 
 for i = 1:n
     ranges = ranges_vals(i, :);
@@ -24,14 +24,17 @@ end
 disp('donezo')
 show(map);
 %%
+show(post_process_map(map))
+%%
 figure
-map2 = occupancyMatrix(map);
-ds = Dstar(map2, 'inflate', 3);
+processed_map = post_process_map(map);
+mtx_map = occupancyMatrix(processed_map);
+ds = Dstar(mtx_map, 'inflate', 5);
 start = [150, 150];
 goal = [240, 150];
 ds.plan(goal);
 path = ds.query(start);
-ds.plot(p)
+ds.plot(path)
 
 
 %%
@@ -55,6 +58,16 @@ end
 function irl_path = path_to_irl(path, map_res, map_size)
     path = path - map_size*10;
     irl_path = path/map_res;
+end
+function processed_map = post_process_map(map)
+    mtx_map = occupancyMatrix(map);
+    G = fspecial('gaussian', [5 5], 1);
+    mtx_map = imfilter(double(mtx_map), G, 'same', 'conv');
+    
+    % threshold map into binary mtx
+    mtx_map = (mtx_map >= 0.25);
+
+    processed_map = binaryOccupancyMap(mtx_map);
 end
 %%
 function map = init_map(map_size, map_res, flag)
@@ -93,6 +106,20 @@ function map = occupancy_map(map, x, y, theta, ang_vel, flag, ranges)
     y = y + offset;
     
 
+    idxs = 1:360;
+    range = -2:2;
+    wrapped_idxs =  mod((idxs(:) + range - 1), 360) + 1;
+
+    x_ = ranges .* cos(angles');
+    y_ = ranges .* sin(angles');
+    
+    x_diff = x_ - x_(wrapped_idxs);
+    y_diff = y_ - y_(wrapped_idxs); 
+
+    dists = sqrt(x_diff.^2 + y_diff.^2);
+    ranges(mean(dists, 2) > 0.15) = 100;
+    
+
 
 
     
@@ -101,8 +128,8 @@ function map = occupancy_map(map, x, y, theta, ang_vel, flag, ranges)
     ranges = ranges(valid);
     angles = angles(valid);
 
-    x_lidar = ranges.*cos(angles');
-    y_lidar = ranges.*sin(angles');
+    x_lidar = x_(valid);
+    y_lidar = y_(valid);
 
     R = rot2(theta);
   
