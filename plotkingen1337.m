@@ -36,7 +36,8 @@ y = -(a/b)*x- (c/ b);
 
 traj = [x' y'];
 
-
+%%
+traj = irl_path;
 
 %%
 close all

@@ -16,16 +16,17 @@ function output = MEKATRONIK(dist_to_wall, alpha, window_size, ranges)
     right = right((0.2 <= right) & (right <= 3));
 
     a_error = mean(left) - mean(right);
-    forward = [ranges(1:window_size+1); ranges(359-window_size:359)];
+        
+    forward = [ranges(0:window_size); ranges(359-window_size:359)];
     forward = forward((0.2 <= forward) & (forward <= 3));
-    forward = min(forward) - dist_to_wall*1.5;
+    forward = min(forward) - dist_to_wall;
 
 
     %a_error = mean(ranges(224:227)) - mean(ranges(314:317));
     %a_error
     %d_error
     d_error2 = min(right) - dist_to_wall;
-    d_error = min([d_error1, d_error2, forward]);
+    d_error = min(d_error1, d_error2, forward);
 
     if isequal(size(d_error), [0 1])
         d_error = 0;

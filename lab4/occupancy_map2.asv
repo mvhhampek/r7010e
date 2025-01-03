@@ -70,7 +70,7 @@ scatter(goal(1), goal(2), 100,'yellowx','Linewidth', 2)
 hold on
 scatter(start(1), start(2), 100, 'blueo','Linewidth', 2)
 legend('Robots trajectory','Goal','Start')
-xlabel('X');ylabel('Y');title('Robot following path');
+xlabel('X');yla
 %%
 function irl_path = path_to_irl(path, map_res, map_size)
     path = path - map_size*10;
