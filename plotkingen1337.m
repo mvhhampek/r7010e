@@ -31,23 +31,22 @@ traj=sinussy;
 a = 1;
 b = -1;
 c = 1;
-x = linspace(-5, 5, 100);
+%%
+a = 1;
+b = -2;
+c = 4;
+%%
+x = linspace(-10, 5, 100);
 y = -(a/b)*x- (c/ b);
 
-traj = [x' y'];
-
-%%
-traj = irl_path;
-
-%%
 close all
-plot(traj(:,1), traj(:,2), 'r--')
+plot(x, y, 'r--')
 
 hold on 
 x_ = x_exp.Data;
 y_ = y_exp.Data;
 yaw_ = theta_exp.Data;
-plot(x_, y_, 'b-')
+plot(x_, y_, 'b-', 'LineWidth', 1)
 
 
 hold on
